@@ -3,9 +3,11 @@ import 'package:scoped_model/scoped_model.dart';
 class CICData extends Model {
   Provinces _provinces;
   bool _showSplashScreen = true;
+  List<String> _recentSearches = new List<String>();
 
   Provinces get provinces => _provinces;
   bool get showSplashScreen => _showSplashScreen;
+  List<String> get recentSearches => _recentSearches;
 
   void downloadCICData(Provinces provinces) {
     this._provinces = provinces;
@@ -15,6 +17,11 @@ class CICData extends Model {
 
   void hideSplashScreen() {
     _showSplashScreen = false;
+  }
+
+  void addToRecentSearches (String value){
+    _recentSearches.add(value);
+    notifyListeners();
   }
 }
 

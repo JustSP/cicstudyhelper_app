@@ -22,7 +22,7 @@ class _AppBarWithSearchState extends State<AppBarWithSearch> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           //Left Column
-          Expanded(            
+          Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,6 +36,31 @@ class _AppBarWithSearchState extends State<AppBarWithSearch> {
             children: <Widget>[Text('Provinces')],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Custom Tiles
+class AppTiles {
+  Widget leftBorderedTile(
+      String firstColumnText, String secondColumnText, String thirdColumnText) {
+    return Card(
+      elevation: 2,
+      child: ClipPath(
+        child: Container(
+          height: 100,
+          decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: Colors.green, width: 5))),
+          child: Row(children: <Widget>[
+            Expanded(child: Text(firstColumnText), flex: 6,),
+            Expanded(child: Text(secondColumnText), flex: 3,),
+            Expanded(child: Text(thirdColumnText), flex: 1,),
+          ],),
+        ),
+        clipper: ShapeBorderClipper(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(2))),
       ),
     );
   }

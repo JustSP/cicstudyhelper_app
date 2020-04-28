@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     return ScopedModel<CICData>(
       model: _cicData,
       child: new MaterialApp(
-        theme: CustomAppThemes().blueTheme(Brightness.dark, 500, 500),
+        theme: CustomAppThemes().blueTheme(Brightness.light, 500, 500),
         //initialRoute: '/',
         //routes: {'/': (context) => PgSplashScreen()},
         home: ScopedModelDescendant<CICData>(

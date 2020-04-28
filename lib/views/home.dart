@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import 'package:cicstudyhelper_app/CustomWidgets/CustomWidgets.dart';
 import 'package:cicstudyhelper_app/model/cicdata.dart';
 import 'package:cicstudyhelper_app/views/details.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,21 +18,22 @@ class PgHome extends StatefulWidget {
 class _PgHomeState extends State<PgHome> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Provinces'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              //showSearch(context: context, delegate: DataSearch());
-            },
-          )
-        ],
-      ),
-      body: ScopedModelDescendant<CICData>(
-        builder: (context, child, model) {
-          return ListView.builder(
+    return ScopedModelDescendant<CICData>(
+      builder: (context, child, model) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Provinces'),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                      context: context, delegate: DataSearch(cicData: model));
+                },
+              )
+            ],
+          ),
+          body: ListView.builder(
             itemCount: model.provinces.provinces.length,
             itemExtent: 100,
             itemBuilder: (context, index) {
@@ -48,7 +50,9 @@ class _PgHomeState extends State<PgHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PgProvinceDetails(selectedItem: index,)),
+                            builder: (context) => PgProvinceDetails(
+                                  selectedItem: index,
+                                )),
                       );
                     },
                     child: Stack(
@@ -89,20 +93,26 @@ class _PgHomeState extends State<PgHome> {
                     ),
                   ));
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
 
 class DataSearch extends SearchDelegate {
+  final CICData cicData;
+
+  DataSearch({this.cicData});
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.clear),
-        onPressed: () {},
+        onPressed: () {
+          query = "";
+        },
       )
     ];
   }
@@ -111,20 +121,53 @@ class DataSearch extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: AnimatedIcon(
-        icon: AnimatedIcons.arrow_menu,
+        icon: AnimatedIcons.menu_arrow,
         progress: transitionAnimation,
       ),
-      onPressed: () {},
+      onPressed: () {
+        close(context, null);
+      },
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return Text('buildSuggestions');
+    List<EducationalInstitution> _searchedInstitutes =
+        new List<EducationalInstitution>();
+
+    for (var province in cicData.provinces.provinces) {
+      for (var institute in province.institutions.institutions) {
+        if (institute.name.toLowerCase().contains(query.toLowerCase())) {
+          _searchedInstitutes.add(institute);
+        }
+      }
+    }
+
+    if (_searchedInstitutes.length > 0) {
+      cicData.addToRecentSearches(query);
+    }
+
+    return ListView.builder(
+      itemCount: _searchedInstitutes.length,
+      itemExtent: 100,
+      itemBuilder: (context, index) {
+        return AppTiles().leftBorderedTile(
+            _searchedInstitutes[index].name,
+            _searchedInstitutes[index].city,
+            _searchedInstitutes[index].pgwpEligible ? "Yes" : "No");
+      },
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Text('buildSuggestions');
+    return ListView.builder(
+      itemCount: cicData.recentSearches.length,
+      itemExtent: 30,
+      itemBuilder: (context, index) {
+        return AppTiles()
+            .leftBorderedTile(cicData.recentSearches[index], "", "");
+      },
+    );
   }
 }
